@@ -25,6 +25,7 @@ fun AdminPanelScreen(
     results: List<ResultEntity>,
     pyqs: List<PyqEntity>,
     onClose: () -> Unit,
+    onLogout: (() -> Unit)? = null,
     onPublishNotice: (title: String, category: String, description: String, pdfUrl: String, isImportant: Boolean) -> Unit,
     onPublishResult: (title: String, course: String, session: String, pdfUrl: String) -> Unit,
     onPublishPyq: (title: String, course: String, department: String, year: String, semester: String, pdfUrl: String) -> Unit,
@@ -74,6 +75,27 @@ fun AdminPanelScreen(
                 navigationIcon = {
                     IconButton(onClick = onClose, modifier = Modifier.testTag("admin_close_button")) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
+                    }
+                },
+                actions = {
+                    if (onLogout != null) {
+                        TextButton(
+                            onClick = onLogout,
+                            modifier = Modifier.testTag("admin_logout_button")
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Logout,
+                                contentDescription = "Logout",
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Text(
+                                text = "Logout",
+                                color = MaterialTheme.colorScheme.error,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
                     }
                 }
             )
