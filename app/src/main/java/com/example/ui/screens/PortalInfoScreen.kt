@@ -920,4 +920,66 @@ private fun ImportantLinksContent(onOpenUrl: (String) -> Unit) {
         ) {
             Column(
                 modifier = Modifier.padding(18.dp),
-                verticalArrangement = 
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    text = "2️⃣ PPU Patna Info Telegram Channel",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF0088CC) // Telegram Blue
+                )
+
+                Text(
+                    text = "Patliputra University से संबंधित सभी महत्वपूर्ण सूचनाएँ, Notice, Result, Admit Card, PYQ, Syllabus, Scholarship एवं अन्य अध्ययन सामग्री प्राप्त करने के लिए हमारे Telegram Channel से जुड़ें।",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    lineHeight = 22.sp
+                )
+
+                Button(
+                    onClick = { onOpenUrl("https://t.me/PPUPatnaInfo") },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0088CC)),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("🔵 Telegram Channel Join करें", fontWeight = FontWeight.Bold, color = Color.White)
+                }
+            }
+        }
+
+        // 3. Telegram Discussion Group
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(18.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    text = "3️⃣ PPU Patna Discussion Group",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                Text(
+                    text = "यदि आपको Patliputra University या किसी भी संबद्ध कॉलेज से संबंधित कोई प्रश्न पूछना है, किसी समस्या का समाधान चाहिए या अन्य विद्यार्थियों से चर्चा करनी है, तो हमारे Discussion Group से जुड़ें।",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    lineHeight = 22.sp
+                )
+
+                Button(
+                    onClick = { onOpenUrl("https://t.me/PPUPatnaGroup") },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("👥 Discussion Group Join करें", fontWeight = FontWeight.Bold)
+                }
+            }
+        }
+    }
