@@ -1,10 +1,14 @@
 package com.example.ui.screens
 
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -15,8 +19,10 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -42,9 +48,28 @@ fun ProfileScreen(
     onOpenAdminPanel: () -> Unit,
     onLogout: () -> Unit
 ) {
-    var showAboutDialog by remember { mutableStateOf(false) }
-    var showPrivacyDialog by remember { mutableStateOf(false) }
-    var showContactDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+    var showSuggestionDialog by remember { mutableStateOf(false) }
+    var suggestionText by remember { mutableStateOf("") }
+
+    fun launchRateApp() {
+        val packageName = context.packageName
+        try {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse("market://details?id=$packageName")).apply {
+                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+            }
+            context.startActivity(intent)
+        } catch (_: Exception) {
+            try {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=$packageName")).apply {
+                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                }
+                context.startActivity(intent)
+            } catch (_: Exception) {
+                Toast.makeText(context, "Play Store link is currently unavailable.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     LazyColumn(
         modifier = Modifier
@@ -53,353 +78,358 @@ fun ProfileScreen(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // User Profile Card
-        item {
-            Card(
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Row(
-                    modifier = Modifier.padding(20.dp),
-                    verticalAlignment = Alignment.CenterVertically
+        if (userState.isAdmin) {
+            // ==================== ADMIN PROFILE ====================
+            item {
+                Card(
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    Surface(
-                        shape = CircleShape,
-                        color = MaterialTheme.colorScheme.surface,
-                        modifier = Modifier.size(64.dp)
+                    Row(
+                        modifier = Modifier.padding(20.dp),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Icon(
-                                imageVector = if (userState.isAdmin) Icons.Filled.AdminPanelSettings else Icons.Filled.Person,
-                                contentDescription = "Profile Avatar",
-                                tint = MaterialTheme.colorScheme.primary,
-                                modifier = Modifier.size(36.dp)
-                            )
+                        Surface(
+                            shape = CircleShape,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(64.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Text(text = "👨‍💼", fontSize = 32.sp)
+                            }
                         }
-                    }
 
-                    Spacer(modifier = Modifier.width(16.dp))
+                        Spacer(modifier = Modifier.width(16.dp))
 
-                    Column(modifier = Modifier.weight(1f)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Column(modifier = Modifier.weight(1f)) {
                             Text(
-                                text = userState.name,
-                                style = MaterialTheme.typography.titleMedium,
+                                text = "👨‍💼 Administrator",
+                                style = MaterialTheme.typography.titleLarge,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
-                            if (userState.isAdmin) {
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Surface(
-                                    shape = RoundedCornerShape(4.dp),
-                                    color = MaterialTheme.colorScheme.secondary
-                                ) {
-                                    Text(
-                                        text = "ADMIN",
-                                        fontSize = 10.sp,
-                                        fontWeight = FontWeight.Bold,
-                                        color = Color.White,
-                                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
-                                    )
-                                }
-                            }
-                        }
 
-                        Spacer(modifier = Modifier.height(2.dp))
-
-                        Text(
-                            text = userState.email,
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
-                        )
-
-                        if (!userState.isAdmin) {
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "Roll: ${userState.rollNo}",
-                                style = MaterialTheme.typography.labelSmall,
-                                fontWeight = FontWeight.SemiBold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
-                    }
-                }
-            }
-        }
 
-        // Saved Bookmarks Section
-        item {
-            val totalBookmarks = bookmarkedNotices.size + bookmarkedResults.size + bookmarkedPyqs.size
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Filled.Bookmark,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "Saved Items & Bookmarks",
-                                style = MaterialTheme.typography.titleMedium,
+                                text = "Username: PPUAPP",
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.9f)
+                            )
+
+                            Text(
+                                text = "Role: Super Admin",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.primary,
                                 fontWeight = FontWeight.Bold
                             )
                         }
-                        Badge {
-                            Text("$totalBookmarks Items")
-                        }
                     }
+                }
+            }
 
-                    if (totalBookmarks == 0) {
-                        Spacer(modifier = Modifier.height(12.dp))
+            // Permissions Section
+            item {
+                Card(
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(18.dp)) {
                         Text(
-                            text = "No bookmarked notices or results yet. Tap the bookmark icon on any notice or result to save it for quick offline reading.",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                            text = "Permissions",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            modifier = Modifier.padding(bottom = 12.dp)
                         )
-                    } else {
-                        Spacer(modifier = Modifier.height(12.dp))
-                        if (bookmarkedNotices.isNotEmpty()) {
-                            Text("Bookmarked Notices:", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
-                            bookmarkedNotices.forEach { notice ->
-                                Row(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .clickable { onNoticeClick(notice) }
-                                        .padding(vertical = 6.dp),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(Icons.Outlined.PictureAsPdf, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(18.dp))
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                    Text(notice.title, style = MaterialTheme.typography.bodyMedium, maxLines = 1, modifier = Modifier.weight(1f))
-                                }
-                            }
+
+                        val permissions = listOf(
+                            "✅ Edit Notices",
+                            "✅ Edit PPU Updates",
+                            "✅ Edit Result",
+                            "✅ Edit Scholarships",
+                            "✅ Edit Syllabus",
+                            "✅ Edit Important Links",
+                            "✅ Upload PDFs",
+                            "✅ Upload Images",
+                            "✅ Change Home Banner",
+                            "✅ Change App Logo",
+                            "✅ Manage App Content"
+                        )
+
+                        permissions.forEach { perm ->
+                            Text(
+                                text = perm,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.padding(vertical = 4.dp)
+                            )
                         }
                     }
                 }
             }
-        }
 
-        // App Settings & Preferences
-        item {
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
+            // Large Admin Panel Button
+            item {
+                Button(
+                    onClick = onOpenAdminPanel,
+                    shape = RoundedCornerShape(16.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(54.dp)
+                        .testTag("admin_panel_button")
+                ) {
+                    Icon(Icons.Outlined.Settings, contentDescription = null)
+                    Spacer(modifier = Modifier.width(10.dp))
                     Text(
-                        text = "App Settings",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        text = "⚙️ Admin Panel",
+                        fontSize = 17.sp,
+                        fontWeight = FontWeight.Bold
                     )
+                }
+            }
 
-                    // Dark Mode Toggle
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 6.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = if (userState.isDarkMode) Icons.Filled.DarkMode else Icons.Outlined.DarkMode,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurface
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text("Dark Theme Mode")
-                        }
-                        Switch(
-                            checked = userState.isDarkMode,
-                            onCheckedChange = onToggleDarkMode,
-                            modifier = Modifier.testTag("dark_mode_switch")
+            // App Settings
+            item {
+                Card(
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(16.dp)) {
+                        Text(
+                            text = "App Settings",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(bottom = 8.dp)
                         )
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 6.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = if (userState.isDarkMode) Icons.Filled.DarkMode else Icons.Outlined.DarkMode,
+                                    contentDescription = null
+                                )
+                                Spacer(modifier = Modifier.width(12.dp))
+                                Text("Dark Theme Mode")
+                            }
+                            Switch(
+                                checked = userState.isDarkMode,
+                                onCheckedChange = onToggleDarkMode,
+                                modifier = Modifier.testTag("dark_mode_switch")
+                            )
+                        }
                     }
+                }
+            }
 
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-
-                    // Push Notifications Toggle
+            // 🔔 Push Notifications Card
+            item {
+                Card(
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 6.dp),
+                            .padding(18.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Outlined.NotificationsActive,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onSurface
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                            Text("Push Notifications")
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(text = "🔔", fontSize = 24.sp)
+                            Spacer(modifier = Modifier.width(14.dp))
+                            Column {
+                                Text(
+                                    text = "Push Notifications",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = if (userState.pushNotificationsEnabled) "Status: ON" else "Status: OFF",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = if (userState.pushNotificationsEnabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
                         }
                         Switch(
                             checked = userState.pushNotificationsEnabled,
                             onCheckedChange = onTogglePushNotifications,
-                            modifier = Modifier.testTag("push_notifications_switch")
+                            modifier = Modifier.testTag("push_notifications_switch_admin")
                         )
                     }
+                }
+            }
 
-                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-
-                    // Admin Panel Action
+            // ⭐ Rate App Card
+            item {
+                Card(
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { launchRateApp() }
+                ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { onOpenAdminPanel() }
-                            .padding(vertical = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(18.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(text = "⭐", fontSize = 24.sp)
+                            Spacer(modifier = Modifier.width(14.dp))
+                            Column {
+                                Text(
+                                    text = "Rate App",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = "Rate us on Google Play Store",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
                         Icon(
-                            imageVector = Icons.Outlined.AdminPanelSettings,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.secondary
-                        )
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text(
-                            text = if (userState.isAdmin) "Go to Admin Dashboard" else "Admin Login Portal",
-                            fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.secondary
+                            imageVector = Icons.Outlined.Star,
+                            contentDescription = "Rate App",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(24.dp)
                         )
                     }
                 }
             }
-        }
 
-        // University Information & Support
-        item {
-            Card(
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Column(modifier = Modifier.padding(16.dp)) {
-                    Text(
-                        text = "University Support & Information",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-
+            // 💡 Suggestions Card
+            item {
+                Card(
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { showSuggestionDialog = true }
+                ) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .clickable { showAboutDialog = true }
-                            .padding(vertical = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                            .padding(18.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Icon(Icons.Outlined.Info, contentDescription = null)
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text("About Patliputra University")
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { showContactDialog = true }
-                            .padding(vertical = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(Icons.Outlined.Phone, contentDescription = null)
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text("PPU Helpline & Contact Info")
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { showPrivacyDialog = true }
-                            .padding(vertical = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(Icons.Outlined.PrivacyTip, contentDescription = null)
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Text("Privacy Policy & Terms")
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text(text = "💡", fontSize = 24.sp)
+                            Spacer(modifier = Modifier.width(14.dp))
+                            Column {
+                                Text(
+                                    text = "Suggestions",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = "Send feedback or suggest new features",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                        Icon(
+                            imageVector = Icons.Outlined.Lightbulb,
+                            contentDescription = "Suggestions",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
                 }
             }
-        }
 
-        // Logout Button
-        item {
-            OutlinedButton(
-                onClick = onLogout,
-                shape = RoundedCornerShape(12.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .padding(bottom = 16.dp)
-                    .testTag("logout_button")
-            ) {
-                Icon(Icons.Outlined.Logout, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text("Logout Account")
+            // Logout Button
+            item {
+                OutlinedButton(
+                    onClick = onLogout,
+                    shape = RoundedCornerShape(14.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .padding(bottom = 12.dp)
+                        .testTag("logout_button")
+                ) {
+                    Icon(Icons.Outlined.Logout, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Logout / Switch Role", fontWeight = FontWeight.Bold)
+                }
             }
-        }
-    }
 
-    // Dialogs
-    if (showAboutDialog) {
-        AlertDialog(
-            onDismissRequest = { showAboutDialog = false },
-            title = { Text("About PPU Patna") },
-            text = {
-                Text(
-                    "Patliputra University, Patna was established on 18th March 2018 by the order of the Government of Bihar. All colleges of Patna and Nalanda districts fall under the jurisdiction of Patliputra University.\n\n" +
-                    "Address: Kankarbagh Main Rd, Hanuman Nagar, Patna, Bihar 800020\nWebsite: https://ppup.ac.in"
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = { showAboutDialog = false }) { Text("Close") }
-            }
-        )
-    }
-
-    if (showContactDialog) {
-        AlertDialog(
-            onDismissRequest = { showContactDialog = false },
-            title = { Text("PPU Contact & Helpline") },
-            text = {
-                Text(
-                    "PPU Examination Helpline: +91 612 2351234\n" +
-                    "Admission Support Email: admission@ppup.ac.in\n" +
-                    "Enquiry Email: info@ppup.ac.in\n" +
-                    "Office Hours: Mon-Sat (10:00 AM - 05:00 PM)"
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = { showContactDialog = false }) { Text("OK") }
-            }
-        )
-    }
-
-    if (showPrivacyDialog) {
-        AlertDialog(
-            onDismissRequest = { showPrivacyDialog = false },
-            title = { Text("Privacy Policy") },
-            text = {
-                Text(
-                    "PPU Patna Info app respects user privacy. No personal student details or passwords are submitted without consent. Offline caching stores data locally on your device for fast access."
-                )
-            },
-            confirmButton = {
-                TextButton(onClick = { showPrivacyDialog = false }) { Text("I Understand") }
-            }
-        )
-    }
-}
+            // ℹ️ Disclaimer Card
+            item {
+                Card(
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 24.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        Text(text = "ℹ️", fontSize = 22.sp)
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = "Disclaimer",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = "यह एक Unofficial App है, जिसे केवल छात्र-छात्राओं की सहायता के उद्देश्य से बनाया गया है।\n\nइस ऐप का उद्देश्य पाटलिपुत्र विश्वविद्यालय (PPU) से संबंधित Notices, Results, Admissions, Scholarships, Exam Updates एवं अन्य महत्वपूर्ण जानकारी छात्रों तक आसानी से पहुँचाना है।",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                lineHeight = 20.sp
+                            )
+                        }
+                    }
+                }
+    
