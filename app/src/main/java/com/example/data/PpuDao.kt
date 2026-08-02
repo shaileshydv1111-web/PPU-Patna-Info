@@ -28,6 +28,9 @@ interface PpuDao {
     @Query("DELETE FROM notices WHERE id = :id")
     suspend fun deleteNotice(id: String)
 
+    @Query("DELETE FROM notices WHERE isBookmarked = 0")
+    suspend fun clearUnbookmarkedNotices()
+
     // --- Results ---
     @Query("SELECT * FROM results ORDER BY timestamp DESC")
     fun getAllResults(): Flow<List<ResultEntity>>
