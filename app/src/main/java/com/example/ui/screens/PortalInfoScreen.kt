@@ -477,3 +477,447 @@ private fun ScholarshipsContent(onOpenUrl: (String) -> Unit) {
                 )
 
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                Text(
+                    text = "Eligibility:",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "• बिहार का स्थायी निवासी होना चाहिए।\n• Post Matric (Intermediate के बाद) किसी मान्यता प्राप्त संस्थान में अध्ययनरत होना चाहिए।\n• संबंधित श्रेणी के अनुसार पात्र होना चाहिए।\n• आधार एवं बैंक खाता DBT से लिंक होना चाहिए।",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    lineHeight = 20.sp
+                )
+
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                Text(
+                    text = "Required Documents:",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold
+                )
+                Text(
+                    text = "• Aadhaar Card\n• Income Certificate\n• Caste Certificate (यदि लागू हो)\n• Residential Certificate\n• Bonafide Certificate\n• Previous Marksheet\n• Bank Passbook\n• Passport Size Photo",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    lineHeight = 20.sp
+                )
+
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                Row {
+                    Text(text = "Application Mode: ", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodySmall)
+                    Text(text = "Online", style = MaterialTheme.typography.bodySmall)
+                }
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "📅 Last Date: ", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodySmall)
+                    Text(text = "15 September 2026", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                }
+
+                Button(
+                    onClick = { onOpenUrl("https://pmsonline.bihar.gov.in/pms/pms_online/Default.aspx") },
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("🎓 Bihar PMS Portal खोलें", fontWeight = FontWeight.Bold)
+                }
+            }
+        }
+
+        // 2. National Scholarship Portal (NSP)
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(18.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    text = "2. National Scholarship Portal (NSP) 2026-27",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                // (A) Central Sector Scheme (CSSS)
+                Text(
+                    text = "(A) Central Sector Scheme (CSSS)",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                Text(
+                    text = "यह भारत सरकार द्वारा मेधावी विद्यार्थियों के लिए संचालित छात्रवृत्ति योजना है।",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = "Eligibility:\n• 12वीं में अच्छे अंक।\n• परिवार की वार्षिक आय निर्धारित सीमा के भीतर।\n• Regular UG Course में Admission।",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    lineHeight = 18.sp
+                )
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(text = "📅 Last Date: ", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodySmall)
+                    Text(text = "31 October 2026", fontWeight = FontWeight.Bold, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.primary)
+                }
+
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                // (B) Post Graduate Scholarship
+                Text(
+                    text = "(B) Post Graduate Scholarship",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.secondary
+                )
+                Text(
+                    text = "यह योजना PG Course में अध्ययनरत पात्र विद्यार्थियों के लिए है।",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = "Eligibility:\n• Regular PG Course में Admission।\n• आधिकारिक पात्रता शर्तें पूरी करनी होंगी।",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    lineHeight = 18.sp
+                )
+
+                Button(
+                    onClick = { onOpenUrl("https://scholarships.gov.in/") },
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("🌐 NSP Portal खोलें", fontWeight = FontWeight.Bold)
+                }
+            }
+        }
+
+        // 3. Mukhyamantri Kanya Utthan Graduation Scholarship
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(18.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    text = "3. Mukhyamantri Kanya Utthan Graduation Scholarship",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
+
+                Text(
+                    text = "मुख्यमंत्री कन्या उत्थान (स्नातक) छात्रवृत्ति योजना बिहार सरकार द्वारा स्नातक उत्तीर्ण छात्राओं को प्रोत्साहन राशि प्रदान करने के उद्देश्य से संचालित की जाती है।",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    lineHeight = 20.sp
+                )
+
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                Text(
+                    text = "Eligibility:\n• बिहार की स्थायी निवासी छात्रा।\n• मान्यता प्राप्त विश्वविद्यालय से स्नातक उत्तीर्ण।\n• सरकार द्वारा निर्धारित सभी शर्तें पूर्ण होनी चाहिए।",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    lineHeight = 20.sp
+                )
+
+                // Note Box
+                Card(
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(12.dp)) {
+                        Text(
+                            text = "📢 Note:\n\nजिन सभी छात्राओं का नाम Medhasoft Portal पर अपलोड हो गया है, उनका ऑनलाइन आवेदन बहुत जल्द प्रारम्भ किया जाएगा। कृपया नियमित रूप से आधिकारिक पोर्टल पर अपडेट देखते रहें।",
+                            style = MaterialTheme.typography.bodySmall,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer,
+                            lineHeight = 18.sp
+                        )
+                    }
+                }
+
+                Button(
+                    onClick = { onOpenUrl("https://medhasoft.bihar.gov.in/") },
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("👩‍🎓 Medhasoft Portal खोलें", fontWeight = FontWeight.Bold)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PyqPapersContent(onOpenUrl: (String) -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Outlined.Folder,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(28.dp)
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        text = "Previous Year Question Papers (PYQ)",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                Text(
+                    text = "पाटलिपुत्र विश्वविद्यालय (PPU) में अब तक जितने भी Courses की परीक्षाएँ आयोजित हुई हैं, उन सभी के Previous Year Question Papers (PYQ) की PDF हमारे Telegram Channel पर उपलब्ध है।",
+                    style = MaterialTheme.typography.bodyLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    lineHeight = 24.sp
+                )
+
+                Text(
+                    text = "आप अपने Course एवं Semester के अनुसार Previous Year Question Papers को आसानी से डाउनलोड करके अपनी परीक्षा की तैयारी कर सकते हैं।",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    lineHeight = 22.sp
+                )
+
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                Card(
+                    shape = RoundedCornerShape(12.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(modifier = Modifier.padding(14.dp)) {
+                        Text(
+                            text = "📢 Note:\n\nजिन भी Courses के Previous Year Question Papers (PYQ) अभी तक अपलोड नहीं किए गए हैं, उन्हें भी बहुत जल्द हमारे Telegram Channel पर अपलोड कर दिया जाएगा।",
+                            style = MaterialTheme.typography.bodyMedium,
+                            fontWeight = FontWeight.Medium,
+                            color = MaterialTheme.colorScheme.onPrimaryContainer,
+                            lineHeight = 20.sp
+                        )
+                    }
+                }
+            }
+        }
+
+        Button(
+            onClick = { onOpenUrl("https://t.me/PPUeSLM") },
+            shape = RoundedCornerShape(14.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFF0088CC) // Telegram Blue
+            ),
+            contentPadding = PaddingValues(vertical = 16.dp, horizontal = 24.dp),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Text(
+                text = "📚 PPU PYQ Telegram Channel खोलें",
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            )
+        }
+    }
+}
+
+@Composable
+private fun SyllabusContent(onOpenUrl: (String) -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        // Intro Card
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer
+            ),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(modifier = Modifier.padding(18.dp)) {
+                Text(
+                    text = "इस पेज पर पाटलिपुत्र विश्वविद्यालय (PPU) के विभिन्न Courses का Course Structure एवं Syllabus उपलब्ध है।",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSecondaryContainer,
+                    lineHeight = 22.sp
+                )
+            }
+        }
+
+        // 4 Cards
+        val syllabusItems = listOf(
+            SyllabusItemData(
+                title = "1️⃣ Course Structure",
+                url = "https://ppup.ac.in/course-structure",
+                buttonText = "📘 Course Structure देखें"
+            ),
+            SyllabusItemData(
+                title = "2️⃣ UG Syllabus",
+                url = "https://ppup.ac.in/ug-syllabus",
+                buttonText = "🎓 UG Syllabus देखें"
+            ),
+            SyllabusItemData(
+                title = "3️⃣ PG Syllabus",
+                url = "https://ppup.ac.in/pg-syllabus",
+                buttonText = "🎓 PG Syllabus देखें"
+            ),
+            SyllabusItemData(
+                title = "4️⃣ Vocational Courses",
+                url = "https://ppup.ac.in/vocational-courses",
+                buttonText = "💼 Vocational Courses देखें"
+            )
+        )
+
+        syllabusItems.forEach { item ->
+            Card(
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Text(
+                        text = item.title,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Button(
+                        onClick = { onOpenUrl(item.url) },
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(item.buttonText, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+        }
+
+        // Telegram Note Card
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.tertiaryContainer
+            ),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(18.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    text = "📢 Note:\n\nजिन भी Courses का Syllabus Patliputra University की Official Website पर उपलब्ध नहीं है, वे हमारे Telegram Channel पर जाकर देख सकते हैं। वहाँ Patliputra University के लगभग सभी Courses का Syllabus PDF उपलब्ध है।",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Medium,
+                    color = MaterialTheme.colorScheme.onTertiaryContainer,
+                    lineHeight = 20.sp
+                )
+
+                Button(
+                    onClick = { onOpenUrl("https://t.me/PPUeSLM") },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF0088CC)),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("📚 PPU Syllabus Telegram Channel खोलें", fontWeight = FontWeight.Bold, color = Color.White)
+                }
+            }
+        }
+    }
+}
+
+private data class SyllabusItemData(
+    val title: String,
+    val url: String,
+    val buttonText: String
+)
+
+@Composable
+private fun ImportantLinksContent(onOpenUrl: (String) -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        // 1. WhatsApp Channel
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(18.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                Text(
+                    text = "1️⃣ PPU Patna Info WhatsApp Channel",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF25D366) // WhatsApp Green
+                )
+
+                Text(
+                    text = "पाटलिपुत्र विश्वविद्यालय (PPU) से जुड़ी हर छोटी-बड़ी खबर, Admission, Exam, Result, Scholarship, Notice एवं अन्य महत्वपूर्ण अपडेट सबसे पहले प्राप्त करने के लिए हमारे WhatsApp Channel से जुड़े रहें।",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    lineHeight = 22.sp
+                )
+
+                Button(
+                    onClick = { onOpenUrl("https://whatsapp.com/channel/0029VaFM6uUFnSzHCwXDBq21") },
+                    shape = RoundedCornerShape(12.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF25D366)),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("🟢 WhatsApp Channel Join करें", fontWeight = FontWeight.Bold, color = Color.White)
+                }
+            }
+        }
+
+        // 2. Telegram Channel
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(18.dp),
+                verticalArrangement = 
