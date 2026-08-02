@@ -912,62 +912,34 @@ fun ProfileScreen(
 
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
-                        val socialPlatforms = listOf(
-                            SocialPlatform(
-                                name = "Telegram",
-                                url = "https://t.me/PPUPatnaInfo",
-                                drawableRes = R.drawable.ic_telegram
-                            ),
-                            SocialPlatform(
-                                name = "WhatsApp",
-                                url = "https://whatsapp.com/channel/0029VaFM6uUFnSzHCwXDBq21",
-                                drawableRes = R.drawable.ic_whatsapp
-                            ),
-                            SocialPlatform(
-                                name = "Instagram",
-                                url = "https://instagram.com/PPUPatnaInfo",
-                                drawableRes = R.drawable.ic_instagram
-                            ),
-                            SocialPlatform(
-                                name = "Facebook",
-                                url = "https://facebook.com/PPUPatnaInfo",
-                                drawableRes = R.drawable.ic_facebook
-                            ),
-                            SocialPlatform(
-                                name = "YouTube",
-                                url = "https://youtube.com/@PPUPatnaInfo",
-                                drawableRes = R.drawable.ic_youtube
-                            )
-                        )
+val socialPlatforms = listOf(
+    "Telegram" to "https://t.me/PPUPatnaInfo",
+    "WhatsApp" to "https://whatsapp.com/channel/0029VaFM6uUFnSzHCwXDBq21",
+    "Instagram" to "https://instagram.com/PPUPatnaInfo",
+    "Facebook" to "https://facebook.com/PPUPatnaInfo",
+    "YouTube" to "https://youtube.com/@PPUPatnaInfo"
+)
 
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 8.dp),
-                            horizontalArrangement = Arrangement.SpaceEvenly,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            socialPlatforms.forEach { platform ->
-                                Image(
-                                    painter = painterResource(id = platform.drawableRes),
-                                    contentDescription = platform.name,
-                                    contentScale = ContentScale.Fit,
-                                    modifier = Modifier
-                                        .size(52.dp)
-                                        .clip(CircleShape)
-                                        .clickable {
-                                            try {
-                                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(platform.url))
-                                                context.startActivity(intent)
-                                            } catch (_: Exception) {}
-                                        }
-                                        .testTag("social_icon_${platform.name.lowercase()}")
-                                )
-                            }
-                        }
-                    }
-                }
+Row(
+    modifier = Modifier
+        .fillMaxWidth()
+        .padding(vertical = 8.dp),
+    horizontalArrangement = Arrangement.SpaceEvenly,
+    verticalAlignment = Alignment.CenterVertically
+) {
+    socialPlatforms.forEach { platform ->
+        Text(
+            text = platform.first,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.clickable {
+                try {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(platform.second))
+                    context.startActivity(intent)
+                } catch (_: Exception) {}
             }
+        )
+    }
+}
 
             // Switch Role / Logout Button
             item {
