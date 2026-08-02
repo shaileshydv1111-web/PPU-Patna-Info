@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -20,11 +21,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.R
 import com.example.data.NoticeEntity
 import com.example.data.PyqEntity
 import com.example.data.ResultEntity
@@ -909,11 +913,31 @@ fun ProfileScreen(
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
                         val socialPlatforms = listOf(
-                            SocialPlatform("Telegram", "https://t.me/PPUPatnaInfo", "📢"),
-                            SocialPlatform("WhatsApp", "https://whatsapp.com/channel/0029VaFM6uUFnSzHCwXDBq21", "💬"),
-                            SocialPlatform("Instagram", "https://instagram.com/PPUPatnaInfo", "📷"),
-                            SocialPlatform("Facebook", "https://facebook.com/PPUPatnaInfo", "📘"),
-                            SocialPlatform("YouTube", "https://youtube.com/@PPUPatnaInfo", "▶️")
+                            SocialPlatform(
+                                name = "Telegram",
+                                url = "https://t.me/PPUPatnaInfo",
+                                drawableRes = R.drawable.ic_telegram
+                            ),
+                            SocialPlatform(
+                                name = "WhatsApp",
+                                url = "https://whatsapp.com/channel/0029VaFM6uUFnSzHCwXDBq21",
+                                drawableRes = R.drawable.ic_whatsapp
+                            ),
+                            SocialPlatform(
+                                name = "Instagram",
+                                url = "https://instagram.com/PPUPatnaInfo",
+                                drawableRes = R.drawable.ic_instagram
+                            ),
+                            SocialPlatform(
+                                name = "Facebook",
+                                url = "https://facebook.com/PPUPatnaInfo",
+                                drawableRes = R.drawable.ic_facebook
+                            ),
+                            SocialPlatform(
+                                name = "YouTube",
+                                url = "https://youtube.com/@PPUPatnaInfo",
+                                drawableRes = R.drawable.ic_youtube
+                            )
                         )
 
                         Row(
@@ -924,11 +948,13 @@ fun ProfileScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             socialPlatforms.forEach { platform ->
-                                Surface(
-                                    shape = CircleShape,
-                                    color = MaterialTheme.colorScheme.surfaceVariant,
+                                Image(
+                                    painter = painterResource(id = platform.drawableRes),
+                                    contentDescription = platform.name,
+                                    contentScale = ContentScale.Fit,
                                     modifier = Modifier
                                         .size(52.dp)
+                                        .clip(CircleShape)
                                         .clickable {
                                             try {
                                                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(platform.url))
@@ -936,11 +962,7 @@ fun ProfileScreen(
                                             } catch (_: Exception) {}
                                         }
                                         .testTag("social_icon_${platform.name.lowercase()}")
-                                ) {
-                                    Box(contentAlignment = Alignment.Center) {
-                                        Text(text = platform.emoji, fontSize = 24.sp)
-                                    }
-                                }
+                                )
                             }
                         }
                     }
@@ -1063,5 +1085,6 @@ fun ProfileScreen(
 private data class SocialPlatform(
     val name: String,
     val url: String,
-    val emoji: String
+    val drawableRes: Int
 )
+

@@ -37,6 +37,9 @@ fun HomeScreen(
     notices: List<NoticeEntity>,
     results: List<ResultEntity>,
     banners: List<BannerEntity>,
+    isNoticesRefreshing: Boolean = false,
+    noticeErrorMessage: String? = null,
+    onRefreshNotices: () -> Unit = {},
     onNoticeClick: (NoticeEntity) -> Unit,
     onResultClick: (ResultEntity) -> Unit,
     onBookmarkToggleNotice: (NoticeEntity) -> Unit,
@@ -46,6 +49,8 @@ fun HomeScreen(
     onViewAllResultsClick: () -> Unit,
     onGlobalSearchClick: () -> Unit
 ) {
+    val sortedNotices = remember(notices) { notices.sortedByDescending { it.timestamp } }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -152,7 +157,7 @@ fun HomeScreen(
             }
         }
 
-        // Quick Access Services Grid (8 Services)
+        // Quick Access Services Grid
         item {
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
@@ -168,42 +173,218 @@ fun HomeScreen(
                 val colorSecondary = MaterialTheme.colorScheme.secondary
                 val colorTertiary = MaterialTheme.colorScheme.tertiary
 
+                // Row 1: Admit Card, Exam Form & Result
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceEvenly
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    QuickAccessItem(
-                        title = "Admit Card",
-                        icon = Icons.Outlined.Badge,
-                        color = colorPrimary,
-                        onClick = { onQuickAccessClick("Admit Card") },
-                        modifier = Modifier.weight(1f)
-                    )
-                    QuickAccessItem(
-                        title = "Exam Form",
-                        icon = Icons.Outlined.EditNote,
-                        color = colorSecondary,
-                        onClick = { onQuickAccessClick("Exam Form") },
-                        modifier = Modifier.weight(1f)
-                    )
-                    QuickAccessItem(
-                        title = "UG Admission",
-                        icon = Icons.Outlined.School,
-                        color = colorPrimary,
-                        onClick = { onQuickAccessClick("UG Admission") },
-                        modifier = Modifier.weight(1f)
-                    )
-                    QuickAccessItem(
-                        title = "PG Admission",
-                        icon = Icons.Outlined.MenuBook,
-                        color = Color(0xFF2E7D32),
-                        onClick = { onQuickAccessClick("PG Admission") },
-                        modifier = Modifier.weight(1f)
-                    )
+                    Card(
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { onQuickAccessClick("Admit Card") }
+                            .testTag("quick_access_admit_card")
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp)
+                        ) {
+                            Surface(
+                                shape = CircleShape,
+                                color = colorPrimary.copy(alpha = 0.15f),
+                                modifier = Modifier.size(36.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Badge,
+                                        contentDescription = "Admit Card",
+                                        tint = colorPrimary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Column {
+                                Text(
+                                    text = "Admit Card",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp,
+                                    maxLines = 1
+                                )
+                                Text(
+                                    text = "Hall Ticket",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    fontSize = 10.sp,
+                                    maxLines = 1
+                                )
+                            }
+                        }
+                    }
+
+                    Card(
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { onQuickAccessClick("Exam Form") }
+                            .testTag("quick_access_exam_form")
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp)
+                        ) {
+                            Surface(
+                                shape = CircleShape,
+                                color = colorSecondary.copy(alpha = 0.15f),
+                                modifier = Modifier.size(36.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.EditNote,
+                                        contentDescription = "Exam Form",
+                                        tint = colorSecondary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Column {
+                                Text(
+                                    text = "Exam Form",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp,
+                                    maxLines = 1
+                                )
+                                Text(
+                                    text = "Online Portal",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    fontSize = 10.sp,
+                                    maxLines = 1
+                                )
+                            }
+                        }
+                    }
+
+                    Card(
+                        shape = RoundedCornerShape(16.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f)
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .clickable { onQuickAccessClick("Result Check") }
+                            .testTag("quick_access_result_check")
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp)
+                        ) {
+                            Surface(
+                                shape = CircleShape,
+                                color = colorTertiary.copy(alpha = 0.15f),
+                                modifier = Modifier.size(36.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Assessment,
+                                        contentDescription = "Result Check",
+                                        tint = colorTertiary,
+                                        modifier = Modifier.size(20.dp)
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(6.dp))
+                            Column {
+                                Text(
+                                    text = "Result Check",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 12.sp,
+                                    maxLines = 1
+                                )
+                                Text(
+                                    text = "Check Marks",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    fontSize = 10.sp,
+                                    maxLines = 1
+                                )
+                            }
+                        }
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(12.dp))
 
+                // Single Featured Button: 🎓 PPU All Courses Admission
+                Card(
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { onQuickAccessClick("All Admission") }
+                        .testTag("quick_access_all_admission")
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 14.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Surface(
+                                shape = CircleShape,
+                                color = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(44.dp)
+                            ) {
+                                Box(contentAlignment = Alignment.Center) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.School,
+                                        contentDescription = null,
+                                        tint = MaterialTheme.colorScheme.onPrimary,
+                                        modifier = Modifier.size(26.dp)
+                                    )
+                                }
+                            }
+                            Spacer(modifier = Modifier.width(12.dp))
+                            Column {
+                                Text(
+                                    text = "🎓 PPU All Courses Admission",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                                Text(
+                                    text = "UG, PG & Vocational Samarth Admission Portal",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
+                                )
+                            }
+                        }
+                        Icon(
+                            imageVector = Icons.Filled.ChevronRight,
+                            contentDescription = "Open",
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Row 3: Scholarships, PYQs Papers, Syllabus, Important Links
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceEvenly
@@ -216,7 +397,7 @@ fun HomeScreen(
                         modifier = Modifier.weight(1f)
                     )
                     QuickAccessItem(
-                        title = "PYQs Papers",
+                        title = "PYQ Papers",
                         icon = Icons.Outlined.Folder,
                         color = colorPrimary,
                         onClick = { onQuickAccessClick("PYQ") },
@@ -284,65 +465,69 @@ fun HomeScreen(
             }
         }
 
-        items(notices.take(3)) { notice ->
-            NoticeCard(
-                notice = notice,
-                onNoticeClick = onNoticeClick,
-                onBookmarkToggle = onBookmarkToggleNotice,
-                modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
-            )
-        }
-
-        // Latest Results Section
-        item {
-            Column(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 8.dp)) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Surface(
-                            shape = CircleShape,
-                            color = MaterialTheme.colorScheme.primaryContainer,
-                            modifier = Modifier.size(28.dp)
+        if (notices.isEmpty()) {
+            item {
+                if (noticeErrorMessage != null) {
+                    Surface(
+                        shape = RoundedCornerShape(16.dp),
+                        color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 6.dp)
+                    ) {
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier.padding(16.dp)
                         ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(
-                                    imageVector = Icons.Filled.FactCheck,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(16.dp)
-                                )
+                            Icon(
+                                imageVector = Icons.Filled.WifiOff,
+                                contentDescription = "No Connection",
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(32.dp)
+                            )
+                            Spacer(modifier = Modifier.height(8.dp))
+                            Text(
+                                text = noticeErrorMessage,
+                                style = MaterialTheme.typography.bodyMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onErrorContainer,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                            )
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Button(
+                                onClick = onRefreshNotices,
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.error
+                                ),
+                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                                modifier = Modifier.height(34.dp)
+                            ) {
+                                Icon(Icons.Filled.Refresh, contentDescription = null, modifier = Modifier.size(14.dp))
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text("पुनः प्रयास करें (Retry)", fontSize = 12.sp)
                             }
                         }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Recently Published Results",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
                     }
-
-                    TextButton(
-                        onClick = onViewAllResultsClick,
-                        modifier = Modifier.testTag("home_view_all_results")
-                    ) {
-                        Text("View All")
-                        Icon(Icons.Filled.ChevronRight, contentDescription = null, modifier = Modifier.size(18.dp))
+                } else if (isNoticesRefreshing) {
+                    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
+                        ShimmerLoader()
                     }
+                } else {
+                    Text(
+                        text = "कोई नया नोटिस उपलब्ध नहीं है।",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
                 }
-
-                Spacer(modifier = Modifier.height(8.dp))
             }
-        }
-
-        items(results.take(2)) { result ->
-            Box(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
-                ResultCard(
-                    result = result,
-                    onResultClick = onResultClick,
-                    onBookmarkToggle = onBookmarkToggleResult
+        } else {
+            items(sortedNotices.take(3)) { notice ->
+                NoticeCard(
+                    notice = notice,
+                    onNoticeClick = onNoticeClick,
+                    onBookmarkToggle = onBookmarkToggleNotice,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
                 )
             }
         }
