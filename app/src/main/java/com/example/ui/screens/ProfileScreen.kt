@@ -988,15 +988,18 @@ item {
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.Top
         ) {
+
             Text(text = "ℹ️", fontSize = 22.sp)
 
             Spacer(modifier = Modifier.width(12.dp))
 
             Column {
+
                 Text(
                     text = "Disclaimer",
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Spacer(modifier = Modifier.height(6.dp))
@@ -1004,9 +1007,15 @@ item {
                 Text(
                     text = "यह एक Unofficial App है, जिसे केवल छात्र-छात्राओं की सहायता के उद्देश्य से बनाया गया है।\n\nइस ऐप का उद्देश्य पाटलिपुत्र विश्वविद्यालय (PPU) से संबंधित Notices, Results, Admissions, Scholarships, Exam Updates एवं अन्य महत्वपूर्ण जानकारी छात्रों तक आसानी से पहुँचाना है।",
                     style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     lineHeight = 20.sp
                 )
             }
         }
     }
-}
+    }
+} // Disclaimer item close
+
+} // LazyColumn close
+
+if (showSuggestionDialog) {
