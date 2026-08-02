@@ -8,12 +8,12 @@ import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 
 data class UserProfileState(
-    val isLoggedIn: Boolean = false,
-    val email: String = "guest@ppu.ac.in",
-    val name: String = "Guest Student",
-    val course: String = "B.A / B.Sc / BCA",
+    val isLoggedIn: Boolean = true,
+    val email: String = "student@ppup.ac.in",
+    val name: String = "Patliputra Student",
+    val course: String = "UG / PG / Vocational",
     val rollNo: String = "2026PPU10492",
-    val isAdmin: Boolean = false,
+    val isAdmin: Boolean = true,
     val pushNotificationsEnabled: Boolean = true,
     val isDarkMode: Boolean = false
 )
@@ -65,6 +65,24 @@ class PpuViewModel(application: Application) : AndroidViewModel(application) {
     private val _userState = MutableStateFlow(UserProfileState())
     val userState: StateFlow<UserProfileState> = _userState.asStateFlow()
 
+    fun updateUserRole(isAdmin: Boolean) {
+        if (isAdmin) {
+            _userState.value = _userState.value.copy(
+                isAdmin = true,
+                name = "Administrator",
+                email = "PPUAPP",
+                course = "Super Admin"
+            )
+        } else {
+            _userState.value = _userState.value.copy(
+                isAdmin = false,
+                name = "Patliputra Student",
+                email = "student@ppup.ac.in",
+                course = "UG / PG / Vocational"
+            )
+        }
+    }
+
     // Active PDF Document in Viewer
     private val _activePdfState = MutableStateFlow<PdfDocumentState?>(null)
     val activePdfState: StateFlow<PdfDocumentState?> = _activePdfState.asStateFlow()
@@ -73,13 +91,40 @@ class PpuViewModel(application: Application) : AndroidViewModel(application) {
     private val _statusMessage = MutableStateFlow<String?>(null)
     val statusMessage: StateFlow<String?> = _statusMessage.asStateFlow()
 
+    // Live Notice Refresh & Error States
+    private val _isNoticesRefreshing = MutableStateFlow(false)
+    val isNoticesRefreshing: StateFlow<Boolean> = _isNoticesRefreshing.asStateFlow()
+
+    private val _noticeErrorMessage = MutableStateFlow<String?>(null)
+    val noticeErrorMessage: StateFlow<String?> = _noticeErrorMessage.asStateFlow()
+
+    // Telegram PPU Updates Refresh & Error States
+    private val _ppuUpdates = MutableStateFlow<List<PpuUpdateEntity>>(emptyList())
+    val ppuUpdates: StateFlow<List<PpuUpdateEntity>> = _ppuUpdates.asStateFlow()
+
+    private val _isUpdatesRefreshing = MutableStateFlow(false)
+    val isUpdatesRefreshing: StateFlow<Boolean> = _isUpdatesRefreshing.asStateFlow()
+
+    private val _updatesErrorMessage = MutableStateFlow<String?>(null)
+    val updatesErrorMessage: StateFlow<String?> = _updatesErrorMessage.asStateFlow()
+
     init {
         val database = PpuDatabase.getDatabase(application)
         repository = PpuRepository(database.ppuDao())
 
         // ViewModel scope initial setup
         viewModelScope.launch {
+            val cached = NoticeFetcher.loadFromCache(application)
+            if (cached.isNotEmpty()) {
+                repository.syncNotices(cached)
+            }
+            val cachedUpdates = PpuUpdateFetcher.loadFromCache(application)
+            if (cachedUpdates.isNotEmpty()) {
+                _ppuUpdates.value = cachedUpdates
+            }
             repository.seedInitialDataIfEmpty()
+            refreshNotices()
+            refreshPpuUpdates()
         }
 
         notices = repository.allNotices.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -93,6 +138,74 @@ class PpuViewModel(application: Application) : AndroidViewModel(application) {
         bookmarkedNotices = repository.bookmarkedNotices.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
         bookmarkedResults = repository.bookmarkedResults.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
         bookmarkedPyqs = repository.bookmarkedPyqs.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    }
+
+    fun refreshNotices() {
+        viewModelScope.launch {
+            _isNoticesRefreshing.value = true
+            _noticeErrorMessage.value = null
+            try {
+                val fetched = NoticeFetcher.fetchNoticesFromWeb()
+                if (fetched.isNotEmpty()) {
+                    NoticeFetcher.saveToCache(getApplication(), fetched)
+                    repository.syncNotices(fetched)
+                    _noticeErrorMessage.value = null
+                } else {
+                    val cached = NoticeFetcher.loadFromCache(getApplication())
+                    if (cached.isEmpty() && notices.value.isEmpty()) {
+                        _noticeErrorMessage.value = "कोई नया नोटिस उपलब्ध नहीं है।"
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                val cached = NoticeFetcher.loadFromCache(getApplication())
+                if (cached.isNotEmpty()) {
+                    repository.syncNotices(cached)
+                }
+                if (notices.value.isEmpty() && cached.isEmpty()) {
+                    _noticeErrorMessage.value = "इंटरनेट कनेक्शन उपलब्ध नहीं है। कृपया पुनः प्रयास करें।"
+                } else {
+                    showStatus("ऑफ़लाइन मोड: कैश्ड नोटिस दिखाए जा रहे हैं")
+                }
+            } finally {
+                _isNoticesRefreshing.value = false
+            }
+        }
+    }
+
+    fun refreshPpuUpdates() {
+        viewModelScope.launch {
+            _isUpdatesRefreshing.value = true
+            _updatesErrorMessage.value = null
+            try {
+                val fetched = PpuUpdateFetcher.fetchUpdatesFromTelegram()
+                if (fetched.isNotEmpty()) {
+                    PpuUpdateFetcher.saveToCache(getApplication(), fetched)
+                    _ppuUpdates.value = fetched
+                    _updatesErrorMessage.value = null
+                } else {
+                    val cached = PpuUpdateFetcher.loadFromCache(getApplication())
+                    if (cached.isNotEmpty()) {
+                        _ppuUpdates.value = cached
+                    } else if (_ppuUpdates.value.isEmpty()) {
+                        _updatesErrorMessage.value = "अभी कोई नया अपडेट उपलब्ध नहीं है।"
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                val cached = PpuUpdateFetcher.loadFromCache(getApplication())
+                if (cached.isNotEmpty()) {
+                    _ppuUpdates.value = cached
+                }
+                if (_ppuUpdates.value.isEmpty()) {
+                    _updatesErrorMessage.value = "इंटरनेट कनेक्शन उपलब्ध नहीं है। कृपया पुनः प्रयास करें।"
+                } else {
+                    showStatus("ऑफ़लाइन मोड: कैश्ड अपडेट्स दिखाए जा रहे हैं")
+                }
+            } finally {
+                _isUpdatesRefreshing.value = false
+            }
+        }
     }
 
     fun updateSearchQuery(query: String) {
