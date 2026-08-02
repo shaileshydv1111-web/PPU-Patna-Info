@@ -19,6 +19,13 @@ class PpuRepository(private val dao: PpuDao) {
     val bookmarkedPyqs: Flow<List<PyqEntity>> = dao.getBookmarkedPyqs()
 
     // Bookmark actions
+    suspend fun syncNotices(notices: List<NoticeEntity>) {
+        if (notices.isNotEmpty()) {
+            dao.clearUnbookmarkedNotices()
+            dao.insertNotices(notices)
+        }
+    }
+
     suspend fun toggleNoticeBookmark(id: String, isBookmarked: Boolean) {
         dao.updateNoticeBookmark(id, isBookmarked)
     }
@@ -121,53 +128,7 @@ class PpuRepository(private val dao: PpuDao) {
         }
     }
 
-    private fun getInitialNotices(): List<NoticeEntity> = listOf(
-        NoticeEntity(
-            id = "n1",
-            title = "UG Regular & Vocational Part 1, 2, 3 Examination Schedule 2026",
-            category = "Exam",
-            date = "01 Aug 2026",
-            description = "Patliputra University Patna has officially released the theory & practical exam datesheet for UG Courses Session 2024-27, 2023-26. Download official PDF datesheet.",
-            pdfUrl = "https://ppup.ac.in/notices/UG_Exam_Schedule_2026.pdf",
-            isImportant = true
-        ),
-        NoticeEntity(
-            id = "n2",
-            title = "UG Admission 2026-29 Phase 1 Merit List & College Cutoff Released",
-            category = "Admission",
-            date = "30 Jul 2026",
-            description = "1st Merit list for B.A, B.Sc, B.Com 4-Year Choice Based Credit System (CBCS) admission session 2026-2029 is now published. Check college cutoffs.",
-            pdfUrl = "https://ppup.ac.in/admission/UG_MeritList_1_2026.pdf",
-            isImportant = true
-        ),
-        NoticeEntity(
-            id = "n3",
-            title = "PG Regular (M.A, M.Sc, M.Com) Semester 2 Admit Card Download Active",
-            category = "Exam",
-            date = "28 Jul 2026",
-            description = "Admit Cards for PG Semester 2 Examination Session 2025-27 are now available on the official online portal. Login with Form No to download.",
-            pdfUrl = "https://ppup.ac.in/notices/PG_AdmitCard_Sem2.pdf",
-            isImportant = false
-        ),
-        NoticeEntity(
-            id = "n4",
-            title = "Bihar Post Matric Scholarship (PMS) Last Date Extended for PPU Students",
-            category = "General",
-            date = "25 Jul 2026",
-            description = "BC, EBC, SC, ST students studying under PPU colleges can submit online scholarship application forms till 31st August 2026.",
-            pdfUrl = "https://pmsonline.bih.nic.in/ppu_notice.pdf",
-            isImportant = false
-        ),
-        NoticeEntity(
-            id = "n5",
-            title = "Annual University Inter-College Sports Meet & Athletics Trail 2026",
-            category = "Sports",
-            date = "20 Jul 2026",
-            description = "Registration open for Volleyball, Badminton, Football, Cricket, and Track events at Patliputra University Sports Ground, Kankarbagh Patna.",
-            pdfUrl = "https://ppup.ac.in/sports/Sports_Meet_2026.pdf",
-            isImportant = false
-        )
-    )
+    private fun getInitialNotices(): List<NoticeEntity> = emptyList()
 
     private fun getInitialResults(): List<ResultEntity> = listOf(
         ResultEntity(
@@ -302,10 +263,10 @@ class PpuRepository(private val dao: PpuDao) {
     private fun getInitialScholarships(): List<ScholarshipEntity> = listOf(
         ScholarshipEntity(
             id = "s1",
-            title = "Bihar Post Matric Scholarship (PMS) BC / EBC / SC / ST",
+            title = "Bihar Post Matric Scholarship (PMS) BC / EBC / SC / ST 2026-27",
             provider = "Govt of Bihar",
             amount = "₹5,000 - ₹18,000 / year",
-            deadline = "31 Aug 2026",
+            deadline = "15 September 2026",
             eligibility = "Domicile of Bihar, Enrolled in PPU college, Family income < ₹3 Lakhs",
             applyUrl = "https://pmsonline.bih.nic.in"
         ),
@@ -320,10 +281,10 @@ class PpuRepository(private val dao: PpuDao) {
         ),
         ScholarshipEntity(
             id = "s3",
-            title = "National Scholarship Portal (NSP) Central Sector Scheme",
+            title = "National Scholarship Portal (NSP) Central Sector Scheme 2026-27",
             provider = "Govt of India",
             amount = "₹12,000 / year",
-            deadline = "30 Sep 2026",
+            deadline = "31 October 2026",
             eligibility = "Top 20th percentile in Class 12 board, pursuing regular UG degree",
             applyUrl = "https://scholarships.gov.in"
         )
