@@ -22,12 +22,14 @@ import com.example.viewmodel.PpuViewModel
 
 enum class AppDestination {
     Splash,
+    UserSelection,
     Onboarding,
-    Auth,
     MainPortal,
     AdminPanel,
     PdfViewer,
-    GlobalSearch
+    GlobalSearch,
+    PortalInfo,
+    PpuUpdates
 }
 
 class MainActivity : ComponentActivity() {
@@ -50,9 +52,15 @@ fun PpuPatnaInfoApp(viewModel: PpuViewModel) {
     val context = LocalContext.current
     var currentDestination by remember { mutableStateOf(AppDestination.Splash) }
     var selectedBottomTab by remember { mutableIntStateOf(0) }
+    var activePortalType by remember { mutableStateOf(PortalType.ADMISSION) }
 
     // Collect ViewModel states
     val notices by viewModel.notices.collectAsStateWithLifecycle()
+    val isNoticesRefreshing by viewModel.isNoticesRefreshing.collectAsStateWithLifecycle()
+    val noticeErrorMessage by viewModel.noticeErrorMessage.collectAsStateWithLifecycle()
+    val ppuUpdates by viewModel.ppuUpdates.collectAsStateWithLifecycle()
+    val isUpdatesRefreshing by viewModel.isUpdatesRefreshing.collectAsStateWithLifecycle()
+    val updatesErrorMessage by viewModel.updatesErrorMessage.collectAsStateWithLifecycle()
     val results by viewModel.results.collectAsStateWithLifecycle()
     val pyqs by viewModel.pyqs.collectAsStateWithLifecycle()
     val admissions by viewModel.admissions.collectAsStateWithLifecycle()
@@ -93,7 +101,33 @@ fun PpuPatnaInfoApp(viewModel: PpuViewModel) {
                 AppDestination.Splash -> {
                     SplashScreen(
                         onSplashFinished = {
-                            currentDestination = AppDestination.Onboarding
+                            val savedRole = UserSessionManager.getUserRole(context)
+                            when (savedRole) {
+                                UserRole.STUDENT -> {
+                                    viewModel.updateUserRole(isAdmin = false)
+                                    currentDestination = AppDestination.MainPortal
+                                }
+                                UserRole.ADMIN -> {
+                                    viewModel.updateUserRole(isAdmin = true)
+                                    currentDestination = AppDestination.MainPortal
+                                }
+                                null -> currentDestination = AppDestination.UserSelection
+                            }
+                        }
+                    )
+                }
+
+                AppDestination.UserSelection -> {
+                    UserSelectionScreen(
+                        onStudentSelect = {
+                            UserSessionManager.setUserRole(context, UserRole.STUDENT)
+                            viewModel.updateUserRole(isAdmin = false)
+                            currentDestination = AppDestination.MainPortal
+                        },
+                        onAdminLoginSuccess = {
+                            UserSessionManager.setUserRole(context, UserRole.ADMIN)
+                            viewModel.updateUserRole(isAdmin = true)
+                            currentDestination = AppDestination.MainPortal
                         }
                     )
                 }
@@ -101,26 +135,7 @@ fun PpuPatnaInfoApp(viewModel: PpuViewModel) {
                 AppDestination.Onboarding -> {
                     OnboardingScreen(
                         onFinishOnboarding = {
-                            currentDestination = AppDestination.Auth
-                        }
-                    )
-                }
-
-                AppDestination.Auth -> {
-                    AuthScreen(
-                        onGuestLogin = {
-                            viewModel.loginAsGuest()
                             currentDestination = AppDestination.MainPortal
-                        },
-                        onStudentLogin = { email, name, rollNo ->
-                            viewModel.loginWithEmail(email, name, rollNo)
-                            currentDestination = AppDestination.MainPortal
-                        },
-                        onAdminLogin = { adminKey ->
-                            viewModel.loginAsAdmin(adminKey)
-                            if (viewModel.userState.value.isAdmin) {
-                                currentDestination = AppDestination.MainPortal
-                            }
                         }
                     )
                 }
@@ -132,10 +147,10 @@ fun PpuPatnaInfoApp(viewModel: PpuViewModel) {
                         topBar = {
                             PpuTopBar(
                                 title = when (selectedBottomTab) {
-                                    0 -> "Home Portal"
+                                    0 -> "PPU Patna Info"
                                     1 -> "Examination Results"
                                     2 -> "Notices & Circulars"
-                                    3 -> "PYQ & Syllabus"
+                                    3 -> "Updates"
                                     else -> "Student Profile"
                                 },
                                 unreadNotificationCount = unreadNotifs,
@@ -145,9 +160,14 @@ fun PpuPatnaInfoApp(viewModel: PpuViewModel) {
                                 onNotificationsClick = {
                                     viewModel.showStatus("Showing ${notifications.size} total notifications")
                                 },
-                                onAdminClick = if (userState.isAdmin) {
-                                    { currentDestination = AppDestination.AdminPanel }
-                                } else null
+                                onAdminClick = {
+                                    val role = UserSessionManager.getUserRole(context)
+                                    if (role == UserRole.ADMIN) {
+                                        currentDestination = AppDestination.AdminPanel
+                                    } else {
+                                        currentDestination = AppDestination.UserSelection
+                                    }
+                                }
                             )
                         },
                         bottomBar = {
@@ -167,15 +187,23 @@ fun PpuPatnaInfoApp(viewModel: PpuViewModel) {
                                     notices = notices,
                                     results = results,
                                     banners = banners,
+                                    isNoticesRefreshing = isNoticesRefreshing,
+                                    noticeErrorMessage = noticeErrorMessage,
+                                    onRefreshNotices = { viewModel.refreshNotices() },
                                     onNoticeClick = { notice ->
-                                        viewModel.openPdfViewer(
-                                            title = notice.title,
-                                            subtitle = "Notice • ${notice.category} • ${notice.date}",
-                                            pdfUrl = notice.pdfUrl,
-                                            category = notice.category,
-                                            date = notice.date
-                                        )
-                                        currentDestination = AppDestination.PdfViewer
+                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(notice.pdfUrl))
+                                        try {
+                                            context.startActivity(intent)
+                                        } catch (e: Exception) {
+                                            viewModel.openPdfViewer(
+                                                title = notice.title,
+                                                subtitle = "Notice • ${notice.category} • ${notice.date}",
+                                                pdfUrl = notice.pdfUrl,
+                                                category = notice.category,
+                                                date = notice.date
+                                            )
+                                            currentDestination = AppDestination.PdfViewer
+                                        }
                                     },
                                     onResultClick = { result ->
                                         viewModel.openPdfViewer(
@@ -195,20 +223,39 @@ fun PpuPatnaInfoApp(viewModel: PpuViewModel) {
                                     },
                                     onQuickAccessClick = { serviceName ->
                                         when (serviceName) {
-                                            "Admit Card", "Exam Form" -> {
-                                                viewModel.setNoticeCategoryFilter("Exam")
-                                                selectedBottomTab = 2
+                                            "Result", "Results", "Result Check" -> {
+                                                selectedBottomTab = 1
                                             }
-                                            "UG Admission", "PG Admission" -> {
-                                                viewModel.setNoticeCategoryFilter("Admission")
-                                                selectedBottomTab = 2
+                                            "All Admission" -> {
+                                                activePortalType = PortalType.ADMISSION
+                                                currentDestination = AppDestination.PortalInfo
+                                            }
+                                            "Exam Form" -> {
+                                                activePortalType = PortalType.EXAM_FORM
+                                                currentDestination = AppDestination.PortalInfo
+                                            }
+                                            "Admit Card" -> {
+                                                activePortalType = PortalType.ADMIT_CARD
+                                                currentDestination = AppDestination.PortalInfo
+                                            }
+                                            "PPU Updates", "Updates", "Update" -> {
+                                                currentDestination = AppDestination.PpuUpdates
                                             }
                                             "Scholarships" -> {
-                                                viewModel.setNoticeCategoryFilter("General")
-                                                selectedBottomTab = 2
+                                                activePortalType = PortalType.SCHOLARSHIPS
+                                                currentDestination = AppDestination.PortalInfo
                                             }
-                                            "PYQ", "Syllabus" -> {
-                                                selectedBottomTab = 3
+                                            "PYQ", "PYQs Papers" -> {
+                                                activePortalType = PortalType.PYQ_PAPERS
+                                                currentDestination = AppDestination.PortalInfo
+                                            }
+                                            "Syllabus" -> {
+                                                activePortalType = PortalType.SYLLABUS
+                                                currentDestination = AppDestination.PortalInfo
+                                            }
+                                            "Important Links" -> {
+                                                activePortalType = PortalType.IMPORTANT_LINKS
+                                                currentDestination = AppDestination.PortalInfo
                                             }
                                             else -> {
                                                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://ppup.ac.in"))
@@ -244,40 +291,37 @@ fun PpuPatnaInfoApp(viewModel: PpuViewModel) {
 
                                 2 -> NoticesScreen(
                                     notices = notices,
+                                    isRefreshing = isNoticesRefreshing,
+                                    errorMessage = noticeErrorMessage,
                                     selectedCategoryFilter = noticeCategoryFilter,
                                     onCategoryFilterSelect = { filter -> viewModel.setNoticeCategoryFilter(filter) },
+                                    onRefresh = { viewModel.refreshNotices() },
                                     onNoticeClick = { notice ->
-                                        viewModel.openPdfViewer(
-                                            title = notice.title,
-                                            subtitle = "Notice • ${notice.category} • ${notice.date}",
-                                            pdfUrl = notice.pdfUrl,
-                                            category = notice.category,
-                                            date = notice.date
-                                        )
-                                        currentDestination = AppDestination.PdfViewer
+                                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(notice.pdfUrl))
+                                        try {
+                                            context.startActivity(intent)
+                                        } catch (e: Exception) {
+                                            viewModel.openPdfViewer(
+                                                title = notice.title,
+                                                subtitle = "Notice • ${notice.category} • ${notice.date}",
+                                                pdfUrl = notice.pdfUrl,
+                                                category = notice.category,
+                                                date = notice.date
+                                            )
+                                            currentDestination = AppDestination.PdfViewer
+                                        }
                                     },
                                     onBookmarkToggle = { notice ->
                                         viewModel.toggleNoticeBookmark(notice.id, notice.isBookmarked)
                                     }
                                 )
 
-                                3 -> PyqScreen(
-                                    pyqs = pyqs,
-                                    selectedCourseFilter = pyqCourseFilter,
-                                    onCourseFilterSelect = { filter -> viewModel.setPyqCourseFilter(filter) },
-                                    onPyqClick = { pyq ->
-                                        viewModel.openPdfViewer(
-                                            title = pyq.title,
-                                            subtitle = "PYQ Paper • ${pyq.course} (${pyq.semester}, ${pyq.year})",
-                                            pdfUrl = pyq.pdfUrl,
-                                            category = pyq.course,
-                                            date = pyq.year
-                                        )
-                                        currentDestination = AppDestination.PdfViewer
-                                    },
-                                    onBookmarkToggle = { pyq ->
-                                        viewModel.togglePyqBookmark(pyq.id, pyq.isBookmarked)
-                                    }
+                                3 -> PpuUpdatesScreen(
+                                    updates = ppuUpdates,
+                                    isRefreshing = isUpdatesRefreshing,
+                                    errorMessage = updatesErrorMessage,
+                                    onRefresh = { viewModel.refreshPpuUpdates() },
+                                    onBackClick = { selectedBottomTab = 0 }
                                 )
 
                                 4 -> ProfileScreen(
@@ -314,15 +358,12 @@ fun PpuPatnaInfoApp(viewModel: PpuViewModel) {
                                         currentDestination = AppDestination.PdfViewer
                                     },
                                     onOpenAdminPanel = {
-                                        if (userState.isAdmin) {
-                                            currentDestination = AppDestination.AdminPanel
-                                        } else {
-                                            currentDestination = AppDestination.Auth
-                                        }
+                                        currentDestination = AppDestination.AdminPanel
                                     },
                                     onLogout = {
-                                        viewModel.logout()
-                                        currentDestination = AppDestination.Auth
+                                        UserSessionManager.clearSession(context)
+                                        viewModel.updateUserRole(isAdmin = false)
+                                        currentDestination = AppDestination.UserSelection
                                     }
                                 )
                             }
@@ -398,6 +439,10 @@ fun PpuPatnaInfoApp(viewModel: PpuViewModel) {
                         results = results,
                         pyqs = pyqs,
                         onClose = { currentDestination = AppDestination.MainPortal },
+                        onLogout = {
+                            UserSessionManager.clearSession(context)
+                            currentDestination = AppDestination.UserSelection
+                        },
                         onPublishNotice = { title, category, description, pdfUrl, isImportant ->
                             viewModel.adminPublishNotice(title, category, description, pdfUrl, isImportant)
                         },
@@ -413,6 +458,23 @@ fun PpuPatnaInfoApp(viewModel: PpuViewModel) {
                         onDeleteNotice = { id -> viewModel.adminDeleteNotice(id) },
                         onDeleteResult = { id -> viewModel.adminDeleteResult(id) },
                         onDeletePyq = { id -> viewModel.adminDeletePyq(id) }
+                    )
+                }
+
+                AppDestination.PortalInfo -> {
+                    PortalInfoScreen(
+                        portalType = activePortalType,
+                        onBackClick = { currentDestination = AppDestination.MainPortal }
+                    )
+                }
+
+                AppDestination.PpuUpdates -> {
+                    PpuUpdatesScreen(
+                        updates = ppuUpdates,
+                        isRefreshing = isUpdatesRefreshing,
+                        errorMessage = updatesErrorMessage,
+                        onRefresh = { viewModel.refreshPpuUpdates() },
+                        onBackClick = { currentDestination = AppDestination.MainPortal }
                     )
                 }
             }
