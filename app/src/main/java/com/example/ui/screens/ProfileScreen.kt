@@ -1013,7 +1013,6 @@ item {
             }
         }
     }
-    }
 } // Disclaimer item close
 
 } // LazyColumn close
