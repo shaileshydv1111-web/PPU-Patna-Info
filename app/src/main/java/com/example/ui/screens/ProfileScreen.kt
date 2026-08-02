@@ -878,7 +878,7 @@ fun ProfileScreen(
                                             style = MaterialTheme.typography.bodyMedium,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                                             lineHeight = 20.sp
-                                        )
+                                                                                )
                                     }
                                 }
                             }
@@ -886,6 +886,8 @@ fun ProfileScreen(
                     }
                 }
             }
+        }
+
 // PPU Patna Info Social Media Link
 item {
     Card(
