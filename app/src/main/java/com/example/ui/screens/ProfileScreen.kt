@@ -808,3 +808,283 @@ fun ProfileScreen(
                                             style = MaterialTheme.typography.titleSmall,
                                             fontWeight = FontWeight.Bold,
                                 
+style = MaterialTheme.typography.titleSmall,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Text(
+                                            text = "info@ppup.ac.in",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            fontWeight = FontWeight.SemiBold
+                                        )
+                                    }
+                                    Icon(
+                                        imageVector = Icons.Outlined.Mail,
+                                        contentDescription = "Send Email",
+                                        tint = MaterialTheme.colorScheme.primary,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                            }
+                        }
+
+                        // 3. Support & Office Hours Card
+                        Card(
+                            shape = RoundedCornerShape(14.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(14.dp),
+                                verticalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                Row(verticalAlignment = Alignment.Top) {
+                                    Text(text = "📞", fontSize = 20.sp)
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Column {
+                                        Text(
+                                            text = "Support:",
+                                            style = MaterialTheme.typography.titleSmall,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Spacer(modifier = Modifier.height(2.dp))
+                                        Text(
+                                            text = "Please visit the official website for the latest contact numbers of the concerned department.",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            lineHeight = 20.sp
+                                        )
+                                    }
+                                }
+
+                                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f))
+
+                                Row(verticalAlignment = Alignment.Top) {
+                                    Text(text = "🕒", fontSize = 20.sp)
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Column {
+                                        Text(
+                                            text = "Office Hours:",
+                                            style = MaterialTheme.typography.titleSmall,
+                                            fontWeight = FontWeight.Bold,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
+                                        Spacer(modifier = Modifier.height(2.dp))
+                                        Text(
+                                            text = "Monday – Friday\n10:00 AM – 5:00 PM",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                            lineHeight = 20.sp
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // PPU Patna Info Social Media Link
+            item {
+                Card(
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.padding(18.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(text = "📲", fontSize = 22.sp)
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text(
+                                text = "Connect With Us",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+
+                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                        val socialPlatforms = listOf(
+                            SocialPlatform(
+                                name = "Telegram",
+                                url = "https://t.me/PPUPatnaInfo",
+                                drawableRes = R.drawable.ic_telegram
+                            ),
+                            SocialPlatform(
+                                name = "WhatsApp",
+                                url = "https://whatsapp.com/channel/0029VaFM6uUFnSzHCwXDBq21",
+                                drawableRes = R.drawable.ic_whatsapp
+                            ),
+                            SocialPlatform(
+                                name = "Instagram",
+                                url = "https://instagram.com/PPUPatnaInfo",
+                                drawableRes = R.drawable.ic_instagram
+                            ),
+                            SocialPlatform(
+                                name = "Facebook",
+                                url = "https://facebook.com/PPUPatnaInfo",
+                                drawableRes = R.drawable.ic_facebook
+                            ),
+                            SocialPlatform(
+                                name = "YouTube",
+                                url = "https://youtube.com/@PPUPatnaInfo",
+                                drawableRes = R.drawable.ic_youtube
+                            )
+                        )
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 8.dp),
+                            horizontalArrangement = Arrangement.SpaceEvenly,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            socialPlatforms.forEach { platform ->
+                                Image(
+                                    painter = painterResource(id = platform.drawableRes),
+                                    contentDescription = platform.name,
+                                    contentScale = ContentScale.Fit,
+                                    modifier = Modifier
+                                        .size(52.dp)
+                                        .clip(CircleShape)
+                                        .clickable {
+                                            try {
+                                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(platform.url))
+                                                context.startActivity(intent)
+                                            } catch (_: Exception) {}
+                                        }
+                                        .testTag("social_icon_${platform.name.lowercase()}")
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Switch Role / Logout Button
+            item {
+                OutlinedButton(
+                    onClick = onLogout,
+                    shape = RoundedCornerShape(14.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp)
+                        .padding(bottom = 12.dp)
+                        .testTag("logout_button")
+                ) {
+                    Icon(Icons.Outlined.SwapHoriz, contentDescription = null)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Switch Role / Select Mode")
+                }
+            }
+
+            // ℹ️ Disclaimer Card
+            item {
+                Card(
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 24.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.Top
+                    ) {
+                        Text(text = "ℹ️", fontSize = 22.sp)
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = "Disclaimer",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = "यह एक Unofficial App है, जिसे केवल छात्र-छात्राओं की सहायता के उद्देश्य से बनाया गया है।\n\nइस ऐप का उद्देश्य पाटलिपुत्र विश्वविद्यालय (PPU) से संबंधित Notices, Results, Admissions, Scholarships, Exam Updates एवं अन्य महत्वपूर्ण जानकारी छात्रों तक आसानी से पहुँचाना है।",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                lineHeight = 20.sp
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (showSuggestionDialog) {
+        AlertDialog(
+            onDismissRequest = { showSuggestionDialog = false },
+            icon = { Text("💡", fontSize = 32.sp) },
+            title = {
+                Text(
+                    text = "Suggestions & Feedback",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+            },
+            text = {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Text(
+                        text = "Your feedback helps us make the Patliputra University app better for all students. Write your suggestion below:",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    OutlinedTextField(
+                        value = suggestionText,
+                        onValueChange = { suggestionText = it },
+                        placeholder = { Text("Type your suggestion or feedback here...") },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(130.dp),
+                        shape = RoundedCornerShape(12.dp),
+                        maxLines = 5
+                    )
+                }
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (suggestionText.isNotBlank()) {
+                            Toast.makeText(context, "धन्यवाद! आपका सुझाव प्राप्त हो गया है।", Toast.LENGTH_LONG).show()
+                            suggestionText = ""
+                            showSuggestionDialog = false
+                        } else {
+                            Toast.makeText(context, "कृपया अपना सुझाव लिखें।", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    shape = RoundedCornerShape(10.dp)
+                ) {
+                    Icon(Icons.Outlined.Send, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text("Submit")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showSuggestionDialog = false }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+}
+
+private data class SocialPlatform(
+    val name: String,
+    val url: String,
+    val drawableRes: Int
+)
