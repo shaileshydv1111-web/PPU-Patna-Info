@@ -477,6 +477,3 @@ private fun ScholarshipsContent(onOpenUrl: (String) -> Unit) {
                 )
 
                 HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-
-                Text(
-  
