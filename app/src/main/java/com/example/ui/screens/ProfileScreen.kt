@@ -911,7 +911,6 @@ fun ProfileScreen(
                         }
 
                         HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-
 val socialPlatforms = listOf(
     "Telegram" to "https://t.me/PPUPatnaInfo",
     "WhatsApp" to "https://whatsapp.com/channel/0029VaFM6uUFnSzHCwXDBq21",
@@ -941,7 +940,7 @@ Row(
     }
 }
 
-            // Switch Role / Logout Button
+        // Switch Role / Logout Button
             item {
                 OutlinedButton(
                     onClick = onLogout,
