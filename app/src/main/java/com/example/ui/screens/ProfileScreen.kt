@@ -804,21 +804,19 @@ fun ProfileScreen(
                                     Text(text = "📧", fontSize = 20.sp)
                                     Spacer(modifier = Modifier.width(10.dp))
                                     Column(modifier = Modifier.weight(1f)) {
-                                        Text(
-                                            text = "Official Email:",
-                                            style = MaterialTheme.typography.titleSmall,
-                                            fontWeight = FontWeight.Bold,
-                                
-style = MaterialTheme.typography.titleSmall,
-                                            fontWeight = FontWeight.Bold,
-                                            color = MaterialTheme.colorScheme.onSurface
-                                        )
-                                        Text(
-                                            text = "info@ppup.ac.in",
-                                            style = MaterialTheme.typography.bodyMedium,
-                                            color = MaterialTheme.colorScheme.primary,
-                                            fontWeight = FontWeight.SemiBold
-                                        )
+    Text(
+        text = "Official Email:",
+        style = MaterialTheme.typography.titleSmall,
+        fontWeight = FontWeight.Bold,
+        color = MaterialTheme.colorScheme.onSurface
+    )
+
+    Text(
+        text = "info@ppup.ac.in",
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.primary,
+        fontWeight = FontWeight.SemiBold
+    )
                                     }
                                     Icon(
                                         imageVector = Icons.Outlined.Mail,
