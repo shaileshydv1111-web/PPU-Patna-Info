@@ -886,175 +886,127 @@ fun ProfileScreen(
                     }
                 }
             }
+// PPU Patna Info Social Media Link
+item {
+    Card(
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(18.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
 
-            // PPU Patna Info Social Media Link
-            item {
-                Card(
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Column(
-                        modifier = Modifier.padding(18.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(text = "📲", fontSize = 22.sp)
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Text(
-                                text = "Connect With Us",
-                                style = MaterialTheme.typography.titleLarge,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.primary
-                            )
-                        }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(text = "📲", fontSize = 22.sp)
+                Spacer(modifier = Modifier.width(10.dp))
 
-                        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
-val socialPlatforms = listOf(
-    "Telegram" to "https://t.me/PPUPatnaInfo",
-    "WhatsApp" to "https://whatsapp.com/channel/0029VaFM6uUFnSzHCwXDBq21",
-    "Instagram" to "https://instagram.com/PPUPatnaInfo",
-    "Facebook" to "https://facebook.com/PPUPatnaInfo",
-    "YouTube" to "https://youtube.com/@PPUPatnaInfo"
-)
-
-Row(
-    modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = 8.dp),
-    horizontalArrangement = Arrangement.SpaceEvenly,
-    verticalAlignment = Alignment.CenterVertically
-) {
-    socialPlatforms.forEach { platform ->
-        Text(
-            text = platform.first,
-            fontWeight = FontWeight.Bold,
-            modifier = Modifier.clickable {
-                try {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(platform.second))
-                    context.startActivity(intent)
-                } catch (_: Exception) {}
-            }
-        )
-    }
-}
-
-        // Switch Role / Logout Button
-            item {
-                OutlinedButton(
-                    onClick = onLogout,
-                    shape = RoundedCornerShape(14.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(50.dp)
-                        .padding(bottom = 12.dp)
-                        .testTag("logout_button")
-                ) {
-                    Icon(Icons.Outlined.SwapHoriz, contentDescription = null)
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Switch Role / Select Mode")
-                }
+                Text(
+                    text = "Connect With Us",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.primary
+                )
             }
 
-            // ℹ️ Disclaimer Card
-            item {
-                Card(
-                    shape = RoundedCornerShape(18.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 24.dp)
-                ) {
-                    Row(
-                        modifier = Modifier.padding(16.dp),
-                        verticalAlignment = Alignment.Top
-                    ) {
-                        Text(text = "ℹ️", fontSize = 22.sp)
-                        Spacer(modifier = Modifier.width(12.dp))
-                        Column {
-                            Text(
-                                text = "Disclaimer",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onSurface
-                            )
-                            Spacer(modifier = Modifier.height(6.dp))
-                            Text(
-                                text = "यह एक Unofficial App है, जिसे केवल छात्र-छात्राओं की सहायता के उद्देश्य से बनाया गया है।\n\nइस ऐप का उद्देश्य पाटलिपुत्र विश्वविद्यालय (PPU) से संबंधित Notices, Results, Admissions, Scholarships, Exam Updates एवं अन्य महत्वपूर्ण जानकारी छात्रों तक आसानी से पहुँचाना है।",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                lineHeight = 20.sp
-                            )
+            HorizontalDivider(
+                color = MaterialTheme.colorScheme.outlineVariant
+            )
+
+            val socialPlatforms = listOf(
+                "Telegram" to "https://t.me/PPUPatnaInfo",
+                "WhatsApp" to "https://whatsapp.com/channel/0029VaFM6uUFnSzHCwXDBq21",
+                "Instagram" to "https://instagram.com/PPUPatnaInfo",
+                "Facebook" to "https://facebook.com/PPUPatnaInfo",
+                "YouTube" to "https://youtube.com/@PPUPatnaInfo"
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                socialPlatforms.forEach { platform ->
+
+                    Text(
+                        text = platform.first,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.clickable {
+                            try {
+                                val intent = Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse(platform.second)
+                                )
+                                context.startActivity(intent)
+                            } catch (_: Exception) {}
                         }
-                    }
+                    )
                 }
             }
         }
     }
+}
 
-    if (showSuggestionDialog) {
-        AlertDialog(
-            onDismissRequest = { showSuggestionDialog = false },
-            icon = { Text("💡", fontSize = 32.sp) },
-            title = {
-                Text(
-                    text = "Suggestions & Feedback",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
-                )
-            },
-            text = {
-                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Text(
-                        text = "Your feedback helps us make the Patliputra University app better for all students. Write your suggestion below:",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    OutlinedTextField(
-                        value = suggestionText,
-                        onValueChange = { suggestionText = it },
-                        placeholder = { Text("Type your suggestion or feedback here...") },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(130.dp),
-                        shape = RoundedCornerShape(12.dp),
-                        maxLines = 5
-                    )
-                }
-            },
-            confirmButton = {
-                Button(
-                    onClick = {
-                        if (suggestionText.isNotBlank()) {
-                            Toast.makeText(context, "धन्यवाद! आपका सुझाव प्राप्त हो गया है।", Toast.LENGTH_LONG).show()
-                            suggestionText = ""
-                            showSuggestionDialog = false
-                        } else {
-                            Toast.makeText(context, "कृपया अपना सुझाव लिखें।", Toast.LENGTH_SHORT).show()
-                        }
-                    },
-                    shape = RoundedCornerShape(10.dp)
-                ) {
-                    Icon(Icons.Outlined.Send, contentDescription = null, modifier = Modifier.size(18.dp))
-                    Spacer(modifier = Modifier.width(6.dp))
-                    Text("Submit")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showSuggestionDialog = false }) {
-                    Text("Cancel")
-                }
-            }
-        )
+
+// Switch Role / Logout Button
+item {
+    OutlinedButton(
+        onClick = onLogout,
+        shape = RoundedCornerShape(14.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(50.dp)
+            .padding(bottom = 12.dp)
+            .testTag("logout_button")
+    ) {
+        Icon(Icons.Outlined.SwapHoriz, contentDescription = null)
+        Spacer(modifier = Modifier.width(8.dp))
+        Text("Switch Role / Select Mode")
     }
 }
 
-private data class SocialPlatform(
-    val name: String,
-    val url: String,
-    val drawableRes: Int
-)
+
+// Disclaimer Card
+item {
+    Card(
+        shape = RoundedCornerShape(18.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 24.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.Top
+        ) {
+            Text(text = "ℹ️", fontSize = 22.sp)
+
+            Spacer(modifier = Modifier.width(12.dp))
+
+            Column {
+                Text(
+                    text = "Disclaimer",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Text(
+                    text = "यह एक Unofficial App है, जिसे केवल छात्र-छात्राओं की सहायता के उद्देश्य से बनाया गया है।\n\nइस ऐप का उद्देश्य पाटलिपुत्र विश्वविद्यालय (PPU) से संबंधित Notices, Results, Admissions, Scholarships, Exam Updates एवं अन्य महत्वपूर्ण जानकारी छात्रों तक आसानी से पहुँचाना है।",
+                    style = MaterialTheme.typography.bodyMedium,
+                    lineHeight = 20.sp
+                )
+            }
+        }
+    }
+}
