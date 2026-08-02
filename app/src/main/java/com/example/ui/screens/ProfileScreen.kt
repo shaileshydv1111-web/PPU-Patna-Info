@@ -431,8 +431,9 @@ fun ProfileScreen(
                             )
                         }
                     }
-                }
-    } else {
+                }    
+            }
+        } else {
             // ==================== STUDENT PROFILE ====================
             item {
                 Card(
