@@ -4,11 +4,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.compose.BackHandler
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.animation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -28,12 +26,12 @@ enum class AppDestination {
     UserSelection,
     Onboarding,
     MainPortal,
+    Results,
     AdminPanel,
     PdfViewer,
     GlobalSearch,
     PortalInfo,
-    PpuUpdates,
-    Results
+    PpuUpdates
 }
 
 class MainActivity : ComponentActivity() {
@@ -57,15 +55,6 @@ fun PpuPatnaInfoApp(viewModel: PpuViewModel) {
     var currentDestination by remember { mutableStateOf(AppDestination.Splash) }
     var selectedBottomTab by remember { mutableIntStateOf(0) }
     var activePortalType by remember { mutableStateOf(PortalType.ADMISSION) }
-
-    // Handle system back press: navigate back within the app instead of exiting,
-    // except when already at the main portal (or splash/selection), where default exit applies.
-    BackHandler(enabled = currentDestination != AppDestination.MainPortal &&
-            currentDestination != AppDestination.Splash &&
-            currentDestination != AppDestination.UserSelection &&
-            currentDestination != AppDestination.Onboarding) {
-        currentDestination = AppDestination.MainPortal
-    }
 
     // Collect ViewModel states
     val notices by viewModel.notices.collectAsStateWithLifecycle()
@@ -91,8 +80,54 @@ fun PpuPatnaInfoApp(viewModel: PpuViewModel) {
     val userState by viewModel.userState.collectAsStateWithLifecycle()
     val activePdfState by viewModel.activePdfState.collectAsStateWithLifecycle()
     val statusMessage by viewModel.statusMessage.collectAsStateWithLifecycle()
+    val studentSuggestions by viewModel.studentSuggestions.collectAsStateWithLifecycle()
 
     val snackbarHostState = remember { SnackbarHostState() }
+
+    // Back Handler for system back button navigation
+    when (currentDestination) {
+        AppDestination.MainPortal -> {
+            if (selectedBottomTab != 0) {
+                BackHandler {
+                    selectedBottomTab = 0
+                }
+            }
+        }
+        AppDestination.Results -> {
+            BackHandler {
+                currentDestination = AppDestination.MainPortal
+            }
+        }
+        AppDestination.PdfViewer -> {
+            BackHandler {
+                viewModel.closePdfViewer()
+                currentDestination = AppDestination.MainPortal
+            }
+        }
+        AppDestination.GlobalSearch -> {
+            BackHandler {
+                currentDestination = AppDestination.MainPortal
+            }
+        }
+        AppDestination.PortalInfo -> {
+            BackHandler {
+                currentDestination = AppDestination.MainPortal
+            }
+        }
+        AppDestination.PpuUpdates -> {
+            BackHandler {
+                currentDestination = AppDestination.MainPortal
+            }
+        }
+        AppDestination.AdminPanel -> {
+            BackHandler {
+                currentDestination = AppDestination.MainPortal
+            }
+        }
+        else -> {
+            // Splash, UserSelection, Onboarding allow system back button to exit naturally
+        }
+    }
 
     // Status snackbar handler
     LaunchedEffect(statusMessage) {
@@ -251,7 +286,7 @@ fun PpuPatnaInfoApp(viewModel: PpuViewModel) {
                                                 currentDestination = AppDestination.PortalInfo
                                             }
                                             "PPU Updates", "Updates", "Update" -> {
-                                                currentDestination = AppDestination.PpuUpdates
+                                                selectedBottomTab = 2
                                             }
                                             "Scholarships" -> {
                                                 activePortalType = PortalType.SCHOLARSHIPS
@@ -322,6 +357,7 @@ fun PpuPatnaInfoApp(viewModel: PpuViewModel) {
                                     bookmarkedNotices = bookmarkedNotices,
                                     bookmarkedResults = bookmarkedResults,
                                     bookmarkedPyqs = bookmarkedPyqs,
+                                    studentSuggestions = studentSuggestions,
                                     onToggleDarkMode = { viewModel.toggleDarkMode(it) },
                                     onTogglePushNotifications = { viewModel.togglePushNotifications(it) },
                                     onNoticeClick = { notice ->
@@ -353,6 +389,8 @@ fun PpuPatnaInfoApp(viewModel: PpuViewModel) {
                                     onOpenAdminPanel = {
                                         currentDestination = AppDestination.AdminPanel
                                     },
+                                    onSubmitSuggestion = { text -> viewModel.submitStudentSuggestion(text) },
+                                    onDeleteSuggestion = { id -> viewModel.deleteStudentSuggestion(id) },
                                     onLogout = {
                                         UserSessionManager.clearSession(context)
                                         viewModel.updateUserRole(isAdmin = false)
@@ -362,6 +400,28 @@ fun PpuPatnaInfoApp(viewModel: PpuViewModel) {
                             }
                         }
                     }
+                }
+
+                AppDestination.Results -> {
+                    ResultsScreen(
+                        results = results,
+                        selectedCourseFilter = resultCourseFilter,
+                        onCourseFilterSelect = { filter -> viewModel.setResultCourseFilter(filter) },
+                        onResultClick = { result ->
+                            viewModel.openPdfViewer(
+                                title = result.title,
+                                subtitle = "Result • ${result.course} (${result.session})",
+                                pdfUrl = result.pdfUrl,
+                                category = result.course,
+                                date = result.publishDate
+                            )
+                            currentDestination = AppDestination.PdfViewer
+                        },
+                        onBookmarkToggle = { result ->
+                            viewModel.toggleResultBookmark(result.id, result.isBookmarked)
+                        },
+                        onBackClick = { currentDestination = AppDestination.MainPortal }
+                    )
                 }
 
                 AppDestination.PdfViewer -> {
@@ -431,6 +491,7 @@ fun PpuPatnaInfoApp(viewModel: PpuViewModel) {
                         notices = notices,
                         results = results,
                         pyqs = pyqs,
+                        studentSuggestions = studentSuggestions,
                         onClose = { currentDestination = AppDestination.MainPortal },
                         onLogout = {
                             UserSessionManager.clearSession(context)
@@ -450,7 +511,8 @@ fun PpuPatnaInfoApp(viewModel: PpuViewModel) {
                         },
                         onDeleteNotice = { id -> viewModel.adminDeleteNotice(id) },
                         onDeleteResult = { id -> viewModel.adminDeleteResult(id) },
-                        onDeletePyq = { id -> viewModel.adminDeletePyq(id) }
+                        onDeletePyq = { id -> viewModel.adminDeletePyq(id) },
+                        onDeleteSuggestion = { id -> viewModel.deleteStudentSuggestion(id) }
                     )
                 }
 
@@ -469,45 +531,6 @@ fun PpuPatnaInfoApp(viewModel: PpuViewModel) {
                         onRefresh = { viewModel.refreshPpuUpdates() },
                         onBackClick = { currentDestination = AppDestination.MainPortal }
                     )
-                }
-
-                AppDestination.Results -> {
-                    Scaffold(
-                        topBar = {
-                            TopAppBar(
-                                title = { Text("Examination Results") },
-                                navigationIcon = {
-                                    IconButton(onClick = { currentDestination = AppDestination.MainPortal }) {
-                                        Icon(
-                                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                            contentDescription = "Back"
-                                        )
-                                    }
-                                }
-                            )
-                        }
-                    ) { innerPadding ->
-                        Box(modifier = Modifier.padding(innerPadding)) {
-                            ResultsScreen(
-                                results = results,
-                                selectedCourseFilter = resultCourseFilter,
-                                onCourseFilterSelect = { filter -> viewModel.setResultCourseFilter(filter) },
-                                onResultClick = { result ->
-                                    viewModel.openPdfViewer(
-                                        title = result.title,
-                                        subtitle = "Result • ${result.course} (${result.session})",
-                                        pdfUrl = result.pdfUrl,
-                                        category = result.course,
-                                        date = result.publishDate
-                                    )
-                                    currentDestination = AppDestination.PdfViewer
-                                },
-                                onBookmarkToggle = { result ->
-                                    viewModel.toggleResultBookmark(result.id, result.isBookmarked)
-                                }
-                            )
-                        }
-                    }
                 }
             }
         }
