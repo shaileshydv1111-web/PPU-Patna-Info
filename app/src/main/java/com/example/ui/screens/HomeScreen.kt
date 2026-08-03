@@ -127,19 +127,6 @@ fun HomeScreen(
                                 .align(Alignment.BottomStart)
                                 .padding(16.dp)
                         ) {
-                            Surface(
-                                shape = RoundedCornerShape(6.dp),
-                                color = MaterialTheme.colorScheme.tertiary
-                            ) {
-                                Text(
-                                    text = "OFFICIAL PPU PORTAL",
-                                    fontSize = 10.sp,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    color = Color.Black,
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
-                                )
-                            }
-                            Spacer(modifier = Modifier.height(4.dp))
                             Text(
                                 text = "Patliputra University, Patna",
                                 style = MaterialTheme.typography.titleMedium,
@@ -188,14 +175,17 @@ fun HomeScreen(
                             .clickable { onQuickAccessClick("Admit Card") }
                             .testTag("quick_access_admit_card")
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp)
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp, horizontal = 4.dp)
                         ) {
                             Surface(
                                 shape = CircleShape,
                                 color = colorPrimary.copy(alpha = 0.15f),
-                                modifier = Modifier.size(36.dp)
+                                modifier = Modifier.size(38.dp)
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
@@ -206,23 +196,23 @@ fun HomeScreen(
                                     )
                                 }
                             }
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Column {
-                                Text(
-                                    text = "Admit Card",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 13.sp,
-                                    maxLines = 1
-                                )
-                                Text(
-                                    text = "Hall Ticket",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontSize = 10.sp,
-                                    maxLines = 1
-                                )
-                            }
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = "Admit Card",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                maxLines = 1
+                            )
+                            Text(
+                                text = "Hall Ticket",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontSize = 10.sp,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                maxLines = 1
+                            )
                         }
                     }
 
@@ -236,14 +226,17 @@ fun HomeScreen(
                             .clickable { onQuickAccessClick("Exam Form") }
                             .testTag("quick_access_exam_form")
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp)
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp, horizontal = 4.dp)
                         ) {
                             Surface(
                                 shape = CircleShape,
                                 color = colorSecondary.copy(alpha = 0.15f),
-                                modifier = Modifier.size(36.dp)
+                                modifier = Modifier.size(38.dp)
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
@@ -254,23 +247,23 @@ fun HomeScreen(
                                     )
                                 }
                             }
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Column {
-                                Text(
-                                    text = "Exam Form",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 13.sp,
-                                    maxLines = 1
-                                )
-                                Text(
-                                    text = "Online Portal",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontSize = 10.sp,
-                                    maxLines = 1
-                                )
-                            }
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = "Exam Form",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                maxLines = 1
+                            )
+                            Text(
+                                text = "Online Portal",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontSize = 10.sp,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                maxLines = 1
+                            )
                         }
                     }
 
@@ -284,14 +277,17 @@ fun HomeScreen(
                             .clickable { onQuickAccessClick("Result Check") }
                             .testTag("quick_access_result_check")
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp)
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp, horizontal = 4.dp)
                         ) {
                             Surface(
                                 shape = CircleShape,
                                 color = colorTertiary.copy(alpha = 0.15f),
-                                modifier = Modifier.size(36.dp)
+                                modifier = Modifier.size(38.dp)
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Icon(
@@ -302,23 +298,23 @@ fun HomeScreen(
                                     )
                                 }
                             }
-                            Spacer(modifier = Modifier.width(6.dp))
-                            Column {
-                                Text(
-                                    text = "Result Check",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 12.sp,
-                                    maxLines = 1
-                                )
-                                Text(
-                                    text = "Check Marks",
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                    fontSize = 10.sp,
-                                    maxLines = 1
-                                )
-                            }
+                            Spacer(modifier = Modifier.height(6.dp))
+                            Text(
+                                text = "Result Check",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                fontSize = 12.sp,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                maxLines = 1
+                            )
+                            Text(
+                                text = "Check Marks",
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                fontSize = 10.sp,
+                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                maxLines = 1
+                            )
                         }
                     }
                 }
@@ -397,7 +393,7 @@ fun HomeScreen(
                         modifier = Modifier.weight(1f)
                     )
                     QuickAccessItem(
-                        title = "PYQ Papers",
+                        title = "Updates",
                         icon = Icons.Outlined.Folder,
                         color = colorPrimary,
                         onClick = { onQuickAccessClick("PYQ") },
@@ -423,113 +419,4 @@ fun HomeScreen(
 
         // Latest Notices Section
         item {
-            Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Surface(
-                            shape = CircleShape,
-                            color = MaterialTheme.colorScheme.secondaryContainer,
-                            modifier = Modifier.size(28.dp)
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Icon(
-                                    imageVector = Icons.Filled.Campaign,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.secondary,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                            }
-                        }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = "Latest Notices & Circulars",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold
-                        )
-                    }
-
-                    TextButton(
-                        onClick = onViewAllNoticesClick,
-                        modifier = Modifier.testTag("home_view_all_notices")
-                    ) {
-                        Text("View All")
-                        Icon(Icons.Filled.ChevronRight, contentDescription = null, modifier = Modifier.size(18.dp))
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-        }
-
-        if (notices.isEmpty()) {
-            item {
-                if (noticeErrorMessage != null) {
-                    Surface(
-                        shape = RoundedCornerShape(16.dp),
-                        color = MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.5f),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 6.dp)
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.padding(16.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.WifiOff,
-                                contentDescription = "No Connection",
-                                tint = MaterialTheme.colorScheme.error,
-                                modifier = Modifier.size(32.dp)
-                            )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = noticeErrorMessage,
-                                style = MaterialTheme.typography.bodyMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onErrorContainer,
-                                textAlign = androidx.compose.ui.text.style.TextAlign.Center
-                            )
-                            Spacer(modifier = Modifier.height(10.dp))
-                            Button(
-                                onClick = onRefreshNotices,
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.error
-                                ),
-                                contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
-                                modifier = Modifier.height(34.dp)
-                            ) {
-                                Icon(Icons.Filled.Refresh, contentDescription = null, modifier = Modifier.size(14.dp))
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text("पुनः प्रयास करें (Retry)", fontSize = 12.sp)
-                            }
-                        }
-                    }
-                } else if (isNoticesRefreshing) {
-                    Column(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)) {
-                        ShimmerLoader()
-                    }
-                } else {
-                    Text(
-                        text = "कोई नया नोटिस उपलब्ध नहीं है।",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                    )
-                }
-            }
-        } else {
-            items(sortedNotices.take(3)) { notice ->
-                NoticeCard(
-                    notice = notice,
-                    onNoticeClick = onNoticeClick,
-                    onBookmarkToggle = onBookmarkToggleNotice,
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
-                )
-            }
-        }
-    }
-}
+            Column(modifier = Modifier.padding(horizontal = 16.dp, ve
